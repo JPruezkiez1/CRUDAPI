@@ -20,7 +20,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.get('/', (req, res) => {
-    db.query('SELECT customers.id, customers.first_name AS firstName, customers.last_name AS lastName, customers.sex AS sex, customers.email, customers.username, customers.password, countries.name AS country, DATE_FORMAT(customers.birthdate, "%Y-%m-%d") AS birthDate, customers.image, customers.active AS statusFROM customers JOIN countries ON customers.country_id = countries.id', (err, results) => {
+    db.query('SELECT customers.id, customers.first_name AS firstName, customers.last_name AS lastName, customers.sex AS sex, customers.email, customers.username, customers.password, countries.name AS country, DATE_FORMAT(customers.birthdate, "%Y-%m-%d") AS birthDate, customers.image, customers.active AS status FROM customers JOIN countries ON customers.country_id = countries.id', (err, results) => {
         if (err) {
             console.error('Error executing SQL query:', err);
             res.status(500).json({ error: 'Internal Server Error' });
