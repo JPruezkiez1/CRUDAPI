@@ -9,6 +9,7 @@ const addusersRoute = require('./Create/users');
 const addordersRoute = require('./Create/Orders');
 const deleteorderRoute = require('./Create/delete-order');
 const imagesRoute = require('./Read/images.js');
+const login = require('./Read/Login.js');
 const db = require('./db');
 app.use(cors());
 app.use(express.json());
@@ -26,6 +27,7 @@ app.use('/add-customer', addusersRoute);
 app.use('/add-order', addordersRoute);
 app.use('/delete', deleteorderRoute);
 app.use('/checkimage', imagesRoute);
+app.use('/login', login);
 
 process.on('SIGINT', () => {
     db.end((err) => {

@@ -15,7 +15,7 @@ router.delete('/:id', (req, res) => {
             res.status(404).json({ error: 'Order not found' });
             return;
         }
-        res.status(204).end();
+        res.status(201).json({ message: 'Order deleted sucessfully', orderId });
     });
 });
 

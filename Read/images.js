@@ -16,7 +16,7 @@ router.get('/:id', (req, res) => {
         }
 
         const imageUrl = baseURL + results[0].image;
-        return res.status(200).json({ id: results[0].id, image: imageUrl });
+        return res.status(200).json({ id: results[0].id, name: results[0].name, image: imageUrl });
     });
 });
 
@@ -30,6 +30,7 @@ router.get('/', (req, res) => {
         const modifiedResults = results.map(result => {
             return {
                 id: result.id,
+                name: result.name,
                 image: baseURL + result.image
             };
         });
