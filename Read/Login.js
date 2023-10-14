@@ -16,7 +16,8 @@ router.post('/', (req, res) => {
             if (results.length === 0) {
                 return res.status(401).json({ error: 'Invalid credentials' });
             }
-            return res.status(200).json({ message: 'Login successful' });
+            const loggedInUsername = results[0].username;
+            return res.status(200).json({ message: `logged in as ${loggedInUsername}` });
         }
     );
 });
