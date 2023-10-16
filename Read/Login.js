@@ -14,7 +14,7 @@ router.post('/', (req, res) => {
                 return res.status(500).json({ error: 'Internal Server Error' });
             }
             if (results.length === 0) {
-                return res.status(401).json({ error: 'Invalid credentials' });
+                return res.status().json({ error: 'Invalid credentials' });
             }
             const loggedInUsername = results[0].username;
             return res.status(200).json({ message: `logged in as ${loggedInUsername}` });

@@ -2,7 +2,7 @@ const express = require('express');
 const db = require('../db.js');
 const router = express.Router();
 
-const baseURL = 'http://34.75.37.247/images/';
+const baseURL = 'https://awo.jpruezkiez.com/';
 
 router.get('/:id', (req, res) => {
     const imageId = req.params.id;
