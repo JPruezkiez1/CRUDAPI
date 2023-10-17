@@ -3,62 +3,66 @@ const db = require('../db.js');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    const ordersQuery = 'SELECT ot.order_id as id, ot.order_date as date, ot.customer_id as userId, ' +
-        'oppu.product_id as id, oppu.product_name as title, oppu.price_per_unit as price, ' +
-        'oppu.description, oppu.category, oppu.image, oppu.quantity ' +
-        'FROM orders_with_total ot ' +
-        'JOIN order_products_with_price_per_unit oppu ' +
-        'ON ot.order_id = oppu.order_id';
-
-    db.query(ordersQuery, (err, results) => {
+    db.query('SELECT ot.order_id as id, ot.order_date as date, ot.customer_id as userId, oppu.product_id as id, oppu.product_name as title, oppu.price_per_unit as price, oppu.description, oppu.image, oppu.quantity FROM orders_with_total ot JOIN order_products_with_price_per_unit oppu ON ot.order_id = oppu.order_id', (err, results) => {
         if (err) {
             console.error('Error executing SQL query:', err);
             return res.status(500).json({ error: 'Internal Server Error' });
         }
-
-        const ordersMap = new Map();
-        results.forEach((row) => {
-            const orderId = row.id;
-            if (!ordersMap.has(orderId)) {
-                ordersMap.set(orderId, {
-                    id: orderId,
-                    date: row.date,
-                    userId: row.userId,
-                    products: [],
-                    totalqty: 0,
-                    totalPrice: 0,
-                });
-            }
-            const order = ordersMap.get(orderId);
-            order.products.push({
+        const ordersWithProducts = results.map((row) => {
+            return {
                 id: row.id,
-                title: row.title,
-                price: parseFloat(row.price),
-                description: row.description,
-                category: row.category,
-                image: row.image,
-                quantity: row.quantity,
-            });
-            order.totalqty += row.quantity;
-            order.totalPrice += parseFloat(row.price) * row.quantity;
+                date: row.date,
+                userId: row.userId,
+                products: [],
+                totalqty: 0,
+                totalPrice: 0,
+            };
         });
+        const fetchProductsForOrders = (order, callback) => {
+            db.query('SELECT * FROM order_products_with_price_per_unit WHERE order_id = ?', [order.id], (err, productResults) => {
+                if (err) {
+                    console.error('Error executing SQL query:', err);
+                    return callback(err);
+                }
+                order.products = productResults.map((productRow) => ({
+                    id: productRow.id,
+                    title: productRow.title,
+                    price: parseFloat(productRow.price),
+                    description: productRow.description,
+                    image: productRow.image,
+                    quantity: productRow.quantity,
+                }));
+                order.totalqty = order.products.reduce((total, product) => total + product.quantity, 0);
+                order.totalPrice = order.products.reduce((total, product) => total + product.price * product.quantity, 0);
 
-        const orders = Array.from(ordersMap.values());
-        res.status(200).json(orders);
+                return callback(null, order);
+            });
+        };
+
+        const fetchOrdersWithProducts = (orders, callback) => {
+            let count = 0;
+            orders.forEach((order) => {
+                fetchProductsForOrders(order, (err, updatedOrder) => {
+                    if (err) {
+                        console.error('Error fetching products for order:', err);
+                        return res.status(500).json({ error: 'Internal Server Error' });
+                    }
+                    count++;
+                    if (count === orders.length) {
+                        return callback(orders);
+                    }
+                });
+            });
+        };
+
+        fetchOrdersWithProducts(ordersWithProducts, (orders) => {
+            res.status(200).json(orders);
+        });
     });
 });
-
 router.get('/:id', (req, res) => {
     const orderId = req.params.id;
-    const ordersQuery = 'SELECT ot.order_id as id, ot.order_date as date, ot.customer_id as userId, ' +
-        'oppu.product_id as id, oppu.product_name as title, oppu.price_per_unit as price, ' +
-        'oppu.description, oppu.category, oppu.image, oppu.quantity ' +
-        'FROM orders_with_total ot ' +
-        'JOIN order_products_with_price_per_unit oppu ' +
-        'ON ot.order_id = oppu.order_id ' +
-        'WHERE ot.order_id = ?';
-
-    db.query(ordersQuery, [orderId], (err, results) => {
+    db.query('SELECT * FROM orders_with_total WHERE order_id = ?', [orderId], (err, results) => {
         if (err) {
             console.error('Error executing SQL query:', err);
             return res.status(500).json({ error: 'Internal Server Error' });
@@ -66,30 +70,31 @@ router.get('/:id', (req, res) => {
         if (results.length === 0) {
             return res.status(404).json({ error: 'Order not found' });
         }
-
         const order = {
-            id: results[0].id,
-            date: results[0].date,
-            userId: results[0].userId,
+            id: results[0].order_id,
+            date: results[0].order_date,
+            userId: results[0].customer_id,
             products: [],
             totalqty: 0,
             totalPrice: 0,
         };
-        results.forEach((row) => {
-            order.products.push({
-                id: row.id,
-                title: row.title,
-                price: parseFloat(row.price),
-                description: row.description,
-                category: row.category,
-                image: row.image,
-                quantity: row.quantity,
-            });
-            order.totalqty += row.quantity;
-            order.totalPrice += parseFloat(row.price) * row.quantity;
+        db.query('SELECT * FROM order_products_with_price_per_unit WHERE order_id = ?', [orderId], (err, productResults) => {
+            if (err) {
+                console.error('Error executing SQL query:', err);
+                return res.status(500).json({ error: 'Internal Server Error' });
+            }
+            order.products = productResults.map((productRow) => ({
+                id: productRow.id,
+                title: productRow.title,
+                price: parseFloat(productRow.price),
+                description: productRow.description,
+                image: productRow.image,
+                quantity: productRow.quantity,
+            }));
+            order.totalqty = order.products.reduce((total, product) => total + product.quantity, 0);
+            order.totalPrice = order.products.reduce((total, product) => total + product.price * product.quantity, 0);
+            res.status(200).json(order);
         });
-
-        res.status(200).json(order);
     });
 });
 
