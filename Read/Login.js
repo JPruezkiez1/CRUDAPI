@@ -23,7 +23,7 @@ router.post('/', (req, res) => {
                 firstName: customer.first_name,
                 lastName: customer.last_name,
                 status: customer.active,
-                image: customer.image // You'll need to specify the image URL or path here.
+                image: customer.image
             };
 
             return res.status(200).json({ loggedInUser });
