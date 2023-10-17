@@ -15,8 +15,8 @@ router.get('/', (req, res) => {
                 date: row.order_date,
                 userId: row.customer_id,
                 products: [],
-                totalqty: 0,
-                totalPrice: 0,
+                totalqty: row.total_items,
+                totalPrice: row.total_value,
             };
         });
 
@@ -29,14 +29,11 @@ router.get('/', (req, res) => {
                 order.products = productResults.map((productRow) => ({
                     id: productRow.product_id,
                     title: productRow.product_name,
-                    price: parseFloat(productRow.price_per_unit),
+                    price: productRow.price_per_unit,
                     description: productRow.description,
-                    category: productRow.category,
                     image: productRow.image,
                     quantity: productRow.quantity,
                 }));
-                order.totalqty = order.products.reduce((total, product) => total + product.quantity, 0);
-                order.totalPrice = order.products.reduce((total, product) => total + product.price * product.quantity, 0);
 
                 return callback(null, order);
             });
@@ -79,8 +76,8 @@ router.get('/:id', (req, res) => {
             date: results[0].order_date,
             userId: results[0].customer_id,
             products: [],
-            totalqty: 0,
-            totalPrice: 0,
+            totalqty: results[0].total_items,
+            totalPrice: results[0].total_value,
         };
         db.query('SELECT * FROM order_products_with_price_per_unit WHERE order_id = ?', [orderId], (err, productResults) => {
             if (err) {
@@ -90,14 +87,11 @@ router.get('/:id', (req, res) => {
             order.products = productResults.map((productRow) => ({
                 id: productRow.product_id,
                 title: productRow.product_name,
-                price: parseFloat(productRow.price_per_unit),
+                price: productRow.price_per_unit,
                 description: productRow.description,
-                category: productRow.category,
                 image: productRow.image,
                 quantity: productRow.quantity,
             }));
-            order.totalqty = order.products.reduce((total, product) => total + product.quantity, 0);
-            order.totalPrice = order.products.reduce((total, product) => total + product.price * product.quantity, 0);
 
             res.status(200).json(order);
         });
