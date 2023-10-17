@@ -3,7 +3,11 @@ const db = require('../db.js');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    db.query('SELECT * FROM latest_product_prices', (err, results) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+
+    db.query('SELECT * FROM latest_product_prices LIMIT ? OFFSET ?', [limit, offset], (err, results) => {
         if (err) {
             console.error('Error executing SQL query:', err);
             return res.status(500).json({ error: 'Internal Server Error' });
