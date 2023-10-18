@@ -1,8 +1,8 @@
 const express = require('express');
 const db = require('../db.js');
 const router = express.Router();
-
-const baseURL = 'https://awo.jpruezkiez.com/';
+require('dotenv').config();
+const baseURL = process.env.BASE_URL;;
 
 router.get('/:id', (req, res) => {
     const imageId = req.params.id;
