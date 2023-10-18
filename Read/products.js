@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = 8;
+    const limit = 12;
     const offset = (page - 1) * limit;
 
     db.query('SELECT * FROM latest_product_prices LIMIT ? OFFSET ?', [limit, offset], (err, results) => {
