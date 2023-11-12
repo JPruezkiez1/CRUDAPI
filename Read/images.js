@@ -58,4 +58,33 @@ router.get('/', (req, res) => {
     });
 });
 
+
+router.get('/name/:name', (req, res) => {
+    const imageName = req.params.name;
+
+    db.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting database connection:', err);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        connection.query('SELECT * FROM imagesurls WHERE name = ?', [imageName], (err, results) => {
+            connection.release();
+
+            if (err) {
+                console.error('Error executing SQL query:', err);
+                return res.status(500).json({ error: 'Internal Server Error' });
+            }
+            if (results.length === 0) {
+                return res.status(404).json({ error: 'Image not found' });
+            }
+
+            const imageUrl = baseURL + results[0].image;
+            return res.status(200).json({ id: results[0].id, name: results[0].name, image: imageUrl });
+        });
+    });
+});
+
+
+
 module.exports = router;
