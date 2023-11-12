@@ -79,11 +79,16 @@ router.get('/name/:name', (req, res) => {
                 return res.status(404).json({ error: 'Image not found' });
             }
 
-            const imageUrl = baseURL + results[0].image;
-            return res.status(200).json({ id: results[0].id, name: results[0].name, image: imageUrl });
+            const images = results.map(result => {
+                const imageUrl = baseURL + result.image;
+                return { id: result.id, name: result.name, image: imageUrl };
+            });
+
+            return res.status(200).json(images);
         });
     });
 });
+
 
 
 
