@@ -26,7 +26,7 @@ router.get('/:id', (req, res) => {
 
             const imageUrl = baseURL + results[0].image;
             const fName = results[0].image;
-            return res.status(200).json({ id: results[0].id, name: results[0].name, image: imageUrl, FileName: fName, Owner: username, OwnerID: customerId });
+            return res.status(200).json({ id: results[0].id, name: results[0].name, image: imageUrl, FileName: fName, Owner: results[0].username, OwnerID: results[0].customerId });
         });
     });
 });
@@ -38,7 +38,7 @@ router.get('/', (req, res) => {
             return res.status(500).json({ error: 'Internal Server Error' });
         }
 
-        connection.query('SELECT * FROM imagesurls', (err, results) => {
+        connection.query('SELECT * FROM images_with_customer_username', (err, results) => {
             connection.release();
 
             if (err) {
@@ -72,7 +72,7 @@ router.get('/name/:name', (req, res) => {
             return res.status(500).json({ error: 'Internal Server Error' });
         }
 
-        connection.query('SELECT * FROM imagesurls WHERE name = ?', [imageName], (err, results) => {
+        connection.query('SELECT * FROM images_with_customer_username WHERE name = ?', [imageName], (err, results) => {
             connection.release();
 
             if (err) {
