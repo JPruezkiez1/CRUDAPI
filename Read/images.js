@@ -5,7 +5,7 @@ require('dotenv').config();
 const baseURL = process.env.BASE_URL;;
 
 router.get('/:id', (req, res) => {
-    const imageId = req.params.id;
+    const fileId = req.params.id;
 
     db.getConnection((err, connection) => {
         if (err) {
@@ -13,7 +13,7 @@ router.get('/:id', (req, res) => {
             return res.status(500).json({ error: 'Internal Server Error' });
         }
 
-        connection.query('SELECT * FROM images_with_customer_username WHERE id = ?', [imageId], (err, results) => {
+        connection.query('SELECT * FROM Files_with_customer_username WHERE id = ?', [fileId], (err, results) => {
             connection.release();
 
             if (err) {
@@ -21,12 +21,11 @@ router.get('/:id', (req, res) => {
                 return res.status(500).json({ error: 'Internal Server Error' });
             }
             if (results.length === 0) {
-                return res.status(404).json({ error: 'Image not found' });
+                return res.status(404).json({ error: 'File not found' });
             }
 
-            const imageUrl = baseURL + results[0].image;
-            const fName = results[0].image;
-            return res.status(200).json({ id: results[0].id, name: results[0].name, image: imageUrl, FileName: fName, Owner: results[0].username, OwnerID: results[0].customerId });
+            const fileUrl = baseURL + results[0].file;
+            return res.status(200).json({ id: results[0].id, uploadname: results[0].upload, file: fileUrl, Owner: results[0].username, OwnerID: results[0].customerId });
         });
     });
 });
@@ -38,7 +37,7 @@ router.get('/', (req, res) => {
             return res.status(500).json({ error: 'Internal Server Error' });
         }
 
-        connection.query('SELECT * FROM images_with_customer_username', (err, results) => {
+        connection.query('SELECT * FROM Files_with_customer_username', (err, results) => {
             connection.release();
 
             if (err) {
@@ -49,9 +48,8 @@ router.get('/', (req, res) => {
             const modifiedResults = results.map(result => {
                 return {
                     id: result.id,
-                    name: result.name,
-                    image: baseURL + result.image,
-                    FileName: result.image,
+                    uploadname: result.upload,
+                    file: baseURL + result.file,
                     Owner: result.username,
                     OwnerId: result.customerId,
                 };
@@ -63,8 +61,8 @@ router.get('/', (req, res) => {
 });
 
 
-router.get('/name/:name', (req, res) => {
-    const imageName = req.params.name;
+router.get('/uploadname/:uploadname', (req, res) => {
+    const uploadname = req.params.uploadname;
 
     db.getConnection((err, connection) => {
         if (err) {
@@ -72,7 +70,7 @@ router.get('/name/:name', (req, res) => {
             return res.status(500).json({ error: 'Internal Server Error' });
         }
 
-        connection.query('SELECT * FROM images_with_customer_username WHERE name = ?', [imageName], (err, results) => {
+        connection.query('SELECT * FROM Files_with_customer_username WHERE uploadname = ?', [uploadname], (err, results) => {
             connection.release();
 
             if (err) {
@@ -80,21 +78,17 @@ router.get('/name/:name', (req, res) => {
                 return res.status(500).json({ error: 'Internal Server Error' });
             }
             if (results.length === 0) {
-                return res.status(404).json({ error: 'Image not found' });
+                return res.status(404).json({ error: 'Files not found' });
             }
 
-            const images = results.map(result => {
-                const imageUrl = baseURL + result.image;
-                const fName = result.image;
-                return { id: result.id, name: result.name, image: imageUrl, FileName: fName, Owner: result.username, OwnerId: result.customerId };
+            const files = results.map(result => {
+                const fileUrl = baseURL + result.file;
+                return { id: result.id, uploadname: result.upload, file: fileUrl, Owner: result.username, OwnerId: result.customerId };
             });
 
-            return res.status(200).json(images);
+            return res.status(200).json(files);
         });
     });
 });
-
-
-
 
 module.exports = router;
