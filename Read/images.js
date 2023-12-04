@@ -13,7 +13,7 @@ router.get('/:id', (req, res) => {
             return res.status(500).json({ error: 'Internal Server Error' });
         }
 
-        connection.query('SELECT * FROM imagesurls WHERE id = ?', [imageId], (err, results) => {
+        connection.query('SELECT * FROM images_with_customer_username WHERE id = ?', [imageId], (err, results) => {
             connection.release();
 
             if (err) {
@@ -26,7 +26,7 @@ router.get('/:id', (req, res) => {
 
             const imageUrl = baseURL + results[0].image;
             const fName = results[0].image;
-            return res.status(200).json({ id: results[0].id, name: results[0].name, image: imageUrl, FileName: fName });
+            return res.status(200).json({ id: results[0].id, name: results[0].name, image: imageUrl, FileName: fName, Owner: username, OwnerID: customerId });
         });
     });
 });
@@ -51,7 +51,9 @@ router.get('/', (req, res) => {
                     id: result.id,
                     name: result.name,
                     image: baseURL + result.image,
-                    FileName: result.image
+                    FileName: result.image,
+                    Owner: result.username,
+                    OwnerId: result.customerId,
                 };
             });
 
@@ -84,7 +86,7 @@ router.get('/name/:name', (req, res) => {
             const images = results.map(result => {
                 const imageUrl = baseURL + result.image;
                 const fName = result.image;
-                return { id: result.id, name: result.name, image: imageUrl, FileName: fName };
+                return { id: result.id, name: result.name, image: imageUrl, FileName: fName, Owner: result.username, OwnerId: result.customerId };
             });
 
             return res.status(200).json(images);
