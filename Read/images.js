@@ -53,8 +53,8 @@ router.get('/', (req, res) => {
                     file: result.file,
                     Owner: result.username,
                     OwnerId: result.customerId,
-                    mbsize: result.sizeInMB,
-                    kbsize: result.sizeInKB,
+                    mbsize: result.SizeInMB,
+                    kbsize: result.SizeInKB,
                 };
             });
 
