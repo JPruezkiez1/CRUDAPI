@@ -71,7 +71,7 @@ router.get('/uploadname/:uploadname', (req, res) => {
             return res.status(500).json({ error: 'Internal Server Error' });
         }
 
-        connection.query('SELECT * FROM Files_with_customer_username WHERE uploadname = ?', [uploadname], (err, results) => {
+        connection.query('SELECT * FROM Files_with_customer_username WHERE upload = ?', [uploadname], (err, results) => {
             connection.release();
 
             if (err) {
