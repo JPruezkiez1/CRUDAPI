@@ -25,7 +25,8 @@ router.get('/:id', (req, res) => {
             }
 
             const imageUrl = baseURL + results[0].image;
-            return res.status(200).json({ id: results[0].id, name: results[0].name, image: imageUrl });
+            const fName = results[0].image;
+            return res.status(200).json({ id: results[0].id, name: results[0].name, image: imageUrl, FileName: fName });
         });
     });
 });
@@ -49,7 +50,8 @@ router.get('/', (req, res) => {
                 return {
                     id: result.id,
                     name: result.name,
-                    image: baseURL + result.image
+                    image: baseURL + result.image,
+                    FileName: result.image
                 };
             });
 
@@ -81,7 +83,8 @@ router.get('/name/:name', (req, res) => {
 
             const images = results.map(result => {
                 const imageUrl = baseURL + result.image;
-                return { id: result.id, name: result.name, image: imageUrl };
+                const fName = result.image;
+                return { id: result.id, name: result.name, image: imageUrl, FileName: fName };
             });
 
             return res.status(200).json(images);
