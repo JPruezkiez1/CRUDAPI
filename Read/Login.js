@@ -31,7 +31,8 @@ router.post('/', (req, res) => {
                     firstName: customer.first_name,
                     lastName: customer.last_name,
                     status: customer.active,
-                    image: customer.image
+                    image: customer.image,
+                    customerId: customer.id
                 };
 
                 return res.status(200).json({ loggedInUser });
