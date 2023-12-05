@@ -2,7 +2,7 @@ const express = require('express');
 const db = require('../db.js');
 const router = express.Router();
 
-router.post('/loads', (req, res) => {
+router.post('/', (req, res) => {
     const { load, events } = req.body;
     if (!load || !events || !Array.isArray(events) || events.length === 0) {
         return res.status(400).send('Invalid request data');
