@@ -7,10 +7,10 @@ const ordersRoute = require('./Read/orders');
 const productsRoute = require('./Read/products.js');
 const addusersRoute = require('./Create/users');
 const addordersRoute = require('./Create/Orders');
-const deleteorderRoute = require('./Create/delete-order');
+const deleteorderRoute = require('./Delete/delete-order');
 const imagesRoute = require('./Read/images.js');
 const login = require('./Read/Login.js');
-
+const userdelete = require('./Delete/DeleteUsers.js')
 app.use(cors());
 app.use(express.json());
 
@@ -19,9 +19,10 @@ app.use('/orders', ordersRoute);
 app.use('/products', productsRoute);
 app.use('/add-customer', addusersRoute);
 app.use('/add-order', addordersRoute);
-app.use('/delete', deleteorderRoute);
+app.use('/orderdelete', deleteorderRoute);
 app.use('/checkimage', imagesRoute);
 app.use('/login', login);
+app.use('/userdelete', userdelete);
 
 process.on('SIGINT', () => {
     console.log('Server is shutting down.');
