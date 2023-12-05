@@ -25,7 +25,7 @@ router.get('/:id', (req, res) => {
             }
 
             const fileUrl = baseURL + results[0].file;
-            return res.status(200).json({ id: results[0].id, upload: results[0].upload, File_link: fileUrl, File: results[0].file, Owner: results[0].username, OwnerID: results[0].customerId, mbsize: results[0].sizeInMB, kbsize: results[0].sizeInKB, });
+            return res.status(200).json({ id: results[0].id, upload: results[0].upload, File_link: fileUrl, file: results[0].file, Owner: results[0].username, OwnerID: results[0].customerId, mbsize: results[0].sizeInMB, kbsize: results[0].sizeInKB, });
         });
     });
 });
@@ -49,7 +49,7 @@ router.get('/', (req, res) => {
                 return {
                     id: result.id,
                     upload: result.upload,
-                    File_Link: baseURL + result.file,
+                    File_link: baseURL + result.file,
                     file: result.file,
                     Owner: result.username,
                     OwnerId: result.customerId,
@@ -86,7 +86,7 @@ router.get('/uploadname/:uploadname', (req, res) => {
 
             const files = results.map(result => {
                 const fileUrl = baseURL + result.file;
-                return { id: result.id, upload: result.upload, File_link: fileUrl, mbsize: result.sizeInMB, kbsize: result.sizeInKB, File: result.file, Owner: result.username, OwnerId: result.customerId };
+                return { id: result.id, upload: result.upload, File_link: fileUrl, mbsize: result.sizeInMB, kbsize: result.sizeInKB, file: result.file, Owner: result.username, OwnerId: result.customerId };
             });
 
             return res.status(200).json(files);
