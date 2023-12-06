@@ -13,6 +13,7 @@ const login = require('./Read/Login.js');
 const userdelete = require('./Delete/DeleteUsers.js')
 const updateusers = require('./Update/UpdateUsers.js')
 const cloads = require('./Create/CLoads.js');
+const gloads = require('./Read/GetLoads.js')
 app.use(cors());
 app.use(express.json());
 
@@ -27,6 +28,7 @@ app.use('/login', login);
 app.use('/userdelete', userdelete);
 app.use('/updateuser', updateusers);
 app.use('/createload', cloads);
+app.use('/loads', gloads);
 process.on('SIGINT', () => {
     console.log('Server is shutting down.');
     process.exit(0);
