@@ -1,8 +1,9 @@
 const express = require('express');
 const db = require('../db.js');
+const fetch = require('node-fetch');  // Import the fetch function
 const router = express.Router();
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {  // Make the callback async
     const { load, events } = req.body;
     if (!load || !events || !Array.isArray(events) || events.length === 0) {
         return res.status(400).send('Invalid request data');
@@ -28,8 +29,18 @@ router.post('/', (req, res) => {
     db.query('INSERT INTO Loads SET ?', load, (err, result) => {
         if (err) throw err;
         const loadID = result.insertId;
-        events.forEach((event) => {
+        events.forEach(async (event) => {  // Make the callback async
             event.LoadID = loadID;
+
+            // Geocode the event address
+            const response = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=YOUR_API_KEY&text=${encodeURIComponent(event.Address)}`);
+            const data = await response.json();
+            if (data.features && data.features.length > 0) {
+                const [lng, lat] = data.features[0].geometry.coordinates;  // Use the coordinates from the first feature
+                event.lat = lat;
+                event.lng = lng;
+            }
+
             db.query('INSERT INTO Events SET ?', event, (err, result) => {
                 if (err) throw err;
             });
@@ -39,4 +50,3 @@ router.post('/', (req, res) => {
 });
 
 module.exports = router;
-
