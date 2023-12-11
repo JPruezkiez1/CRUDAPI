@@ -1,8 +1,9 @@
 const express = require('express');
 const db = require('../db.js');
+const fetch = require('node-fetch');  // Import the fetch function
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res) => {  // Make the callback async
     const { load, events } = req.body;
     if (!load || !events || !Array.isArray(events) || events.length === 0) {
         return res.status(400).send('Invalid request data');
@@ -31,14 +32,13 @@ router.post('/', async (req, res) => {
         events.forEach(async (event) => {
             event.LoadID = loadID;
 
-            // Geocode the event address
-            const fetch = await import('node-fetch');  // Use dynamic import() instead of require()
-            const response = await fetch.default(`https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf6248b79337769f8f4c6487ffd785bc7ce8bd&text=${encodeURIComponent(event.Address)}`);
+            // Geocode the event address using Google Maps Geocoding API
+            const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(event.Address)}&key=AIzaSyCztUKCZ4mi0VCHzUAaAtSY3aXMi1sqRYg`);
             const data = await response.json();
-            if (data.features && data.features.length > 0) {
-                const [lng, lat] = data.features[0].geometry.coordinates;
-                event.lat = lat;
-                event.lng = lng;
+            if (data.results && data.results.length > 0) {
+                const location = data.results[0].geometry.location;
+                event.lat = location.lat;
+                event.lng = location.lng;
             }
 
             db.query('INSERT INTO Events SET ?', event, (err, result) => {
