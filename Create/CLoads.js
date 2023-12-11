@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {  // Make the callback async
             event.LoadID = loadID;
 
             // Geocode the event address
-            const response = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=YOUR_API_KEY&text=${encodeURIComponent(event.Address)}`);
+            const response = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=5b3ce3597851110001cf6248b79337769f8f4c6487ffd785bc7ce8bd&text=${encodeURIComponent(event.Address)}`);
             const data = await response.json();
             if (data.features && data.features.length > 0) {
                 const [lng, lat] = data.features[0].geometry.coordinates;  // Use the coordinates from the first feature
