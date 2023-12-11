@@ -1,6 +1,5 @@
 const express = require('express');
 const db = require('../db.js');
-const fetch = require('node-fetch');  // Import the fetch function
 const router = express.Router();
 
 router.post('/', async (req, res) => {  // Make the callback async
@@ -33,7 +32,8 @@ router.post('/', async (req, res) => {  // Make the callback async
             event.LoadID = loadID;
 
             // Geocode the event address using Google Maps Geocoding API
-            const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(event.Address)}&key=AIzaSyCztUKCZ4mi0VCHzUAaAtSY3aXMi1sqRYg`);
+            const fetch = await import('node-fetch');  // Use dynamic import() instead of require()
+            const response = await fetch.default(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(event.Address)}&key=AIzaSyCztUKCZ4mi0VCHzUAaAtSY3aXMi1sqRYg`);
             const data = await response.json();
             if (data.results && data.results.length > 0) {
                 const location = data.results[0].geometry.location;
